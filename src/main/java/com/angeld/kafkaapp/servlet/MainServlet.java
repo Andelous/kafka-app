@@ -1,11 +1,10 @@
 package com.angeld.kafkaapp.servlet;
 
 import java.io.IOException;
-import java.util.Properties;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import com.angeld.kafkaapp.ConsumerWrapper;
+import com.angeld.kafkaapp.KafkaObjects;
+import com.angeld.kafkaapp.ProducerWrapper;
 
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -17,43 +16,51 @@ import jakarta.servlet.http.HttpSession;
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 4427019123484161199L;
 
+	private static final String PRODUCER = "PRODUCER";
+	private static final String CONSUMER = "CONSUMER";
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
-		System.out.println("Servlet inicializado.");
+		System.out.println("Initialized servlet.");
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
 
-		String tipo = req.getParameter("tipo");
+		String type = req.getParameter("type");
+		String name = req.getParameter("name");
 
-		switch (tipo) {
-		case "PRODUCTOR":
-			// Crear productor de Kafka
-			Properties props = new Properties();
-			props.put("bootstrap.servers", "192.168.1.100:9092");
-			props.put("linger.ms", 1);
-			props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-			props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		if (type != null && !type.isBlank()) {
+			switch (type) {
+			case PRODUCER:
+				ProducerWrapper pw = new ProducerWrapper(name);
+				KafkaObjects.mapProducers.put(name, pw);
+				session.setAttribute(PRODUCER, pw);
+				break;
 
-			Producer<String, String> producer = new KafkaProducer<>(props);
-			for (int i = 0; i < 100; i++)
-				producer.send(new ProducerRecord<String, String>("quickstart-events", Integer.toString(i), Integer.toString(i)));
+			case CONSUMER:
+				ConsumerWrapper cw = new ConsumerWrapper(name);
+				KafkaObjects.mapConsumers.put(name, cw);
+				session.setAttribute(CONSUMER, cw);
+				break;
+			}
+		} else {
+			ProducerWrapper producer = (ProducerWrapper) session.getAttribute(PRODUCER);
+			ConsumerWrapper consumer = (ConsumerWrapper) session.getAttribute(CONSUMER);
 
-			producer.close();
+			if (producer != null)
+				producer.getProducer().close();
+			if (consumer != null)
+				consumer.getConsumer().close();
 
-			break;
-
-		case "CONSUMIDOR":
-			// Crear consumidor de Kafka
-			break;
+			session.setAttribute(PRODUCER, null);
+			session.setAttribute(CONSUMER, null);
 		}
 
-		session.setAttribute("tipo-cliente", tipo);
-
+		session.setAttribute("type-client", type);
 		resp.sendRedirect("/index.jsp");
 	}
 }

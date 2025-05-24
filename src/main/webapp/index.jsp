@@ -1,13 +1,12 @@
 
 <%
-String tipoCliente = (String) session.getAttribute("tipo-cliente");
+String typeClient = (String) session.getAttribute("type-client");
 
-if (tipoCliente != null) {
-	System.out.println("Redireccionando!!!");
-	if (tipoCliente.equals("PRODUCTOR")) {
-		response.sendRedirect("/productor.jsp");
+if (typeClient != null) {
+	if (typeClient.equals("PRODUCER")) {
+		response.sendRedirect("/producer.jsp");
 	} else {
-		response.sendRedirect("/consumidor.jsp");
+		response.sendRedirect("/consumer.jsp");
 	}
 
 	return;
@@ -36,7 +35,7 @@ if (tipoCliente != null) {
 				<h4>Productores</h4>
 
 				<form action="main" method="get">
-					<input type="hidden" name="tipo" value="PRODUCTOR"></input>
+					<input type="hidden" name="type" value="PRODUCER"></input>
 					<button type="submit" class="btn btn-primary">&iexcl;Quiero
 						ser productor&excl;</button>
 				</form>
@@ -55,7 +54,7 @@ if (tipoCliente != null) {
 				<h4>Consumidores</h4>
 
 				<form action="main" method="get">
-					<input type="hidden" name="tipo" value="CONSUMIDOR"></input>
+					<input type="hidden" name="type" value="CONSUMER"></input>
 					<button type="submit" class="btn btn-primary">&iexcl;Quiero
 						ser consumidor&excl;</button>
 				</form>
@@ -65,16 +64,6 @@ if (tipoCliente != null) {
 </div>
 
 <div>abcd</div>
-
-<%
-System.out.println("Khe");
-String asf = "AAA";
-%>
-
-<%=session.getAttribute("meow")%>
-<%=asf%>
-
-
 
 <%@ include file="/footer.jsp"%>
 

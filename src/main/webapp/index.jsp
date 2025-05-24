@@ -2,11 +2,13 @@
 <%
 String typeClient = (String) session.getAttribute("type-client");
 
-if (typeClient != null) {
+outer: if (typeClient != null) {
 	if (typeClient.equals("PRODUCER")) {
 		response.sendRedirect("/producer.jsp");
-	} else {
+	} else if (typeClient.equals("CONSUMER")){
 		response.sendRedirect("/consumer.jsp");
+	} else {
+		break outer;
 	}
 
 	return;

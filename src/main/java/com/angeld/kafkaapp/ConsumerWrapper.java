@@ -1,41 +1,61 @@
 package com.angeld.kafkaapp;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
+import java.util.function.Consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;;
 
 public class ConsumerWrapper {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerWrapper.class);
+
 	private KafkaConsumer<String, String> consumer;
 	private String name;
-	private List<String> events;
+	private List<String> events = new ArrayList<>();
+	private boolean shouldRun = true;
+	private Instant lastConsumed;
 
 	public ConsumerWrapper(String name) {
-		super();
-
-		Properties props = new Properties();
-		props.setProperty("bootstrap.servers", "192.168.1.100:9092");
-		props.setProperty("group.id", "test");
-		props.setProperty("enable.auto.commit", "true");
-		props.setProperty("auto.commit.interval.ms", "1000");
-		props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-		consumer.subscribe(Arrays.asList("quickstart-events"));
+		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(KafkaObjects.CONSUMER_PROPERTIES);
+		consumer.subscribe(Arrays.asList(KafkaObjects.CONSUMER_PROPERTIES.getProperty("topic")));
 
 		Runnable r = new Runnable() {
-
 			@Override
 			public void run() {
-				while (true) {
-					ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-					for (ConsumerRecord<String, String> record : records)
-						System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(),
-								record.value());
+				while (shouldRun) {
+					ConsumerRecords<String, String> val = consumer.poll(Duration.ofMillis(100));
+
+					for (ConsumerRecord<String, String> record : val) {
+						LOGGER.info("offset = {}, key = {}, value = {}", record.offset(), record.key(), record.value());
+						events.add(record.value());
+						lastConsumed = Instant.now();
+					}
+				}
+			}
+		};
+
+		new Thread(r).start();
+
+		this.consumer = consumer;
+		this.name = name;
+	}
+
+	public ConsumerWrapper(String name, Consumer<ConsumerRecords<String, String>> eventConsumer) {
+		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(KafkaObjects.CONSUMER_PROPERTIES);
+		consumer.subscribe(Arrays.asList(KafkaObjects.CONSUMER_PROPERTIES.getProperty("topic")));
+
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				while (shouldRun) {
+					eventConsumer.accept(consumer.poll(Duration.ofMillis(100)));
 				}
 			}
 		};
@@ -69,4 +89,21 @@ public class ConsumerWrapper {
 	public void setEvents(List<String> events) {
 		this.events = events;
 	}
+
+	public boolean getShouldRun() {
+		return shouldRun;
+	}
+
+	public void setShouldRun(boolean shouldRun) {
+		this.shouldRun = shouldRun;
+	}
+
+	public Instant getLastConsumed() {
+		return lastConsumed;
+	}
+
+	public void setLastConsumed(Instant lastConsumed) {
+		this.lastConsumed = lastConsumed;
+	}
+
 }

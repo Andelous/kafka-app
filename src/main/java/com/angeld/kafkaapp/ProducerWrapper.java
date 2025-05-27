@@ -1,7 +1,6 @@
 package com.angeld.kafkaapp;
 
 import java.time.Instant;
-import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 
@@ -11,15 +10,7 @@ public class ProducerWrapper {
 	private Instant lastProduced;
 
 	public ProducerWrapper(String name) {
-		super();
-
-		Properties props = new Properties();
-		props.put("bootstrap.servers", "192.168.1.100:9092");
-		props.put("linger.ms", 1);
-		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-		KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+		KafkaProducer<String, String> producer = new KafkaProducer<>(KafkaObjects.PRODUCER_PROPERTIES);
 
 		this.producer = producer;
 		this.name = name;

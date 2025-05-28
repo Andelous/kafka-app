@@ -5,7 +5,9 @@ import static com.angeld.kafkaapp.KafkaObjects.PRODUCER;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.kafka.clients.producer.Producer;
@@ -16,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import com.angeld.kafkaapp.ConsumerWrapper;
 import com.angeld.kafkaapp.KafkaObjects;
 import com.angeld.kafkaapp.ProducerWrapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
@@ -28,9 +32,10 @@ import jakarta.ws.rs.core.Response;
 @Path("")
 public class KafkaRestActions {
 	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaRestActions.class);
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	public KafkaRestActions() {
-		LOGGER.info("Initialized Kafka REST Actions");
+//		LOGGER.info("Initialized Kafka REST Actions");
 	}
 
 	@GET
@@ -47,9 +52,22 @@ public class KafkaRestActions {
 
 		Producer<String, String> producer = pw.getProducer();
 
+		Map<String, String> mapJson = new HashMap<>();
+		mapJson.put("temperature", request.getParameter("temperature"));
+		mapJson.put(PRODUCER, pw.getName());
+
+		String json;
+		try {
+			json = MAPPER.writeValueAsString(mapJson);
+		} catch (JsonProcessingException e) {
+			LOGGER.error("Something went wrong...", e);
+			throw new RuntimeException(e);
+		}
+
 		producer.send(new ProducerRecord<String, String>(KafkaObjects.PRODUCER_PROPERTIES.getProperty("topic"),
-				UUID.randomUUID().toString(), request.getParameter("temperature")));
+				UUID.randomUUID().toString(), json));
 		pw.setLastProduced(Instant.now());
+		KafkaObjects.EVENTS.add(json);
 
 		LOGGER.info("Produced event successfully by producer {}", pw.getName());
 
@@ -64,6 +82,19 @@ public class KafkaRestActions {
 
 		List<String> events = cw.getEvents();
 
-		return Response.ok().entity(events.toArray()).build();
+		return Response.ok().entity(events).build();
+	}
+
+	@GET
+	@Path("/all-data")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response listAllData() {
+		Map<String, Object> data = new HashMap<>();
+
+		data.put("producers", KafkaObjects.MAP_PRODUCERS);
+		data.put("consumers", KafkaObjects.MAP_CONSUMERS);
+		data.put("events", KafkaObjects.EVENTS);
+
+		return Response.ok().entity(data).build();
 	}
 }

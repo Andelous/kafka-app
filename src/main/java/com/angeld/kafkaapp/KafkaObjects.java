@@ -1,6 +1,8 @@
 package com.angeld.kafkaapp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -26,8 +28,10 @@ public class KafkaObjects {
 		}
 	}
 
-	public static final Map<String, ProducerWrapper> mapProducers = new HashMap<>();
-	public static final Map<String, ConsumerWrapper> mapConsumers = new HashMap<>();
+	public static final Map<String, ProducerWrapper> MAP_PRODUCERS = new HashMap<>();
+	public static final Map<String, ConsumerWrapper> MAP_CONSUMERS = new HashMap<>();
+
+	public static final List<String> EVENTS = new ArrayList<>();
 
 	public static final String PRODUCER = "PRODUCER";
 	public static final String CONSUMER = "CONSUMER";

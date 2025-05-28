@@ -42,13 +42,13 @@ public class MainServlet extends HttpServlet {
 			switch (type) {
 			case PRODUCER:
 				ProducerWrapper pw = new ProducerWrapper(name);
-				KafkaObjects.mapProducers.put(name, pw);
+				KafkaObjects.MAP_PRODUCERS.put(name, pw);
 				session.setAttribute(PRODUCER, pw);
 				break;
 
 			case CONSUMER:
 				ConsumerWrapper cw = new ConsumerWrapper(name);
-				KafkaObjects.mapConsumers.put(name, cw);
+				KafkaObjects.MAP_CONSUMERS.put(name, cw);
 				session.setAttribute(CONSUMER, cw);
 				break;
 			}

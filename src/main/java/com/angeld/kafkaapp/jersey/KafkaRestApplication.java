@@ -12,6 +12,7 @@ public class KafkaRestApplication extends ResourceConfig {
 		LOGGER.info("Initializing Kafka REST Application...");
 
 		packages("com.angeld.kafkaapp.jersey");
+		register(ObjectMapperProvider.class);
 		register(JacksonFeature.class);
 
 		LOGGER.info("Initialized Kafka REST Application");

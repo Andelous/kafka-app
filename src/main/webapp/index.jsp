@@ -2,7 +2,7 @@
 <%
 String typeClient = (String) session.getAttribute("type-client");
 
-outer: if (typeClient != null) {
+outer : if (typeClient != null) {
 	if (typeClient.equals("PRODUCER")) {
 		response.sendRedirect("/producer.jsp");
 	} else if (typeClient.equals("CONSUMER")) {
@@ -36,24 +36,30 @@ outer: if (typeClient != null) {
 		<div class="col-md-3 p-2">
 			<h4>Productores</h4>
 
-			<div class="card">
-				<div class="card-body">Sin productores</div>
+			<div id="list-producers">
+				<div class="card">
+					<div class="card-body">Sin productores</div>
+				</div>
 			</div>
 		</div>
 
 		<div class="col-md-6 p-2">
 			<h4>Eventos</h4>
 
-			<div class="card">
-				<div class="card-body">Sin eventos</div>
+			<div id="list-events">
+				<div class="card">
+					<div class="card-body">Sin eventos</div>
+				</div>
 			</div>
 		</div>
 
 		<div class="col-md-3 p-2">
 			<h4>Consumidores</h4>
 
-			<div class="card">
-				<div class="card-body">Sin consumidores</div>
+			<div id="list-consumers">
+				<div class="card">
+					<div class="card-body">Sin consumidores</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -102,6 +108,60 @@ outer: if (typeClient != null) {
 </div>
 
 <div>abcdefg</div>
+
+<script>
+	async function fetchAllData() {
+		let response = await
+		fetch("/kafka/all-data", {
+			method : "GET"
+		});
+
+		let json = await response.json();
+		console.log(json);
+
+		// Producers
+		
+		let producers = json.producers;
+		let contents = "";
+		
+		for (let name in producers) {
+			contents += '<div class="card"><div class="card-body">' + name + '</div></div>';
+		}
+		
+		let divProducers = document.getElementById("list-producers");
+		divProducers.innerHTML = contents;
+		
+		
+		// Events 
+		
+		let events = json.events;
+		contents = "";
+		
+		for (let pos in events) {
+			contents += '<div class="card"><div class="card-body">' + events[pos] + '</div></div>';
+		}
+		
+		let divEvents = document.getElementById("list-events");
+		divEvents.innerHTML = contents;
+
+
+		// Consumers 
+		
+		let consumers = json.consumers;
+		contents = "";
+		
+		for (let name in consumers) {
+			contents += '<div class="card"><div class="card-body">' + name + '</div></div>';
+		}
+		
+		let divConsumers = document.getElementById("list-consumers");
+		divConsumers.innerHTML = contents;
+
+		setTimeout(fetchAllData, 2500);
+	}
+
+	fetchAllData();
+</script>
 
 <%@ include file="/footer.jsp"%>
 

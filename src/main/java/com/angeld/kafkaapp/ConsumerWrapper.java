@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -20,7 +19,7 @@ public class ConsumerWrapper {
 	private String name;
 	private List<String> events = new ArrayList<>();
 	private boolean shouldRun = true;
-	private Instant lastConsumed;
+	private Long lastConsumed;
 
 	public ConsumerWrapper(String name) {
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(KafkaObjects.CONSUMER_PROPERTIES);
@@ -35,27 +34,8 @@ public class ConsumerWrapper {
 					for (ConsumerRecord<String, String> record : val) {
 						LOGGER.info("offset = {}, key = {}, value = {}", record.offset(), record.key(), record.value());
 						events.add(record.value());
-						lastConsumed = Instant.now();
+						lastConsumed = Instant.now().toEpochMilli();
 					}
-				}
-			}
-		};
-
-		new Thread(r).start();
-
-		this.consumer = consumer;
-		this.name = name;
-	}
-
-	public ConsumerWrapper(String name, Consumer<ConsumerRecords<String, String>> eventConsumer) {
-		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(KafkaObjects.CONSUMER_PROPERTIES);
-		consumer.subscribe(Arrays.asList(KafkaObjects.CONSUMER_PROPERTIES.getProperty("topic")));
-
-		Runnable r = new Runnable() {
-			@Override
-			public void run() {
-				while (shouldRun) {
-					eventConsumer.accept(consumer.poll(Duration.ofMillis(100)));
 				}
 			}
 		};
@@ -98,12 +78,11 @@ public class ConsumerWrapper {
 		this.shouldRun = shouldRun;
 	}
 
-	public Instant getLastConsumed() {
+	public Long getLastConsumed() {
 		return lastConsumed;
 	}
 
-	public void setLastConsumed(Instant lastConsumed) {
+	public void setLastConsumed(Long lastConsumed) {
 		this.lastConsumed = lastConsumed;
 	}
-
 }

@@ -61,6 +61,8 @@ public class MainServlet extends HttpServlet {
 
 				type = PRODUCER;
 				name = producer.getName();
+
+				KafkaObjects.MAP_PRODUCERS.remove(name);
 			}
 
 			if (consumer != null) {
@@ -73,6 +75,8 @@ public class MainServlet extends HttpServlet {
 
 				type = CONSUMER;
 				name = consumer.getName();
+
+				KafkaObjects.MAP_CONSUMERS.remove(name);
 			}
 
 			LOGGER.info("Deleting existing Kafka object... {}-{}", type, name);

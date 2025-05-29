@@ -53,6 +53,7 @@ public class KafkaRestActions {
 		Producer<String, String> producer = pw.getProducer();
 
 		Map<String, String> mapJson = new HashMap<>();
+		mapJson.put("datetime", Long.toString(Instant.now().toEpochMilli()));
 		mapJson.put("temperature", request.getParameter("temperature"));
 		mapJson.put(PRODUCER, pw.getName());
 
@@ -66,7 +67,8 @@ public class KafkaRestActions {
 
 		producer.send(new ProducerRecord<String, String>(KafkaObjects.PRODUCER_PROPERTIES.getProperty("topic"),
 				UUID.randomUUID().toString(), json));
-		pw.setLastProduced(Instant.now());
+		pw.setLastProduced(Instant.now().toEpochMilli());
+		pw.setEventCount(pw.getEventCount() + 1);
 		KafkaObjects.EVENTS.add(json);
 
 		LOGGER.info("Produced event successfully by producer {}", pw.getName());

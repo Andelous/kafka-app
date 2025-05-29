@@ -19,7 +19,7 @@ outer : if (typeClient != null) {
 <%@ include file="/header.jsp"%>
 
 
-<div class="mt-3 d-flex justify-content-start align-items-center">
+<div class="mt-3 d-flex justify-content-center align-items-center">
 	<img alt="Logo de Kafka" src="favicon.ico" class="img-thumbnail me-3"
 		style="width: 50px; height: 50px;">
 
@@ -31,9 +31,9 @@ outer : if (typeClient != null) {
 
 <hr>
 
-<div class="container">
+<div class="container-fluid">
 	<div class="row">
-		<div class="col-md-3 p-2">
+		<div class="col-md-2 p-2">
 			<h4>Productores</h4>
 
 			<div id="list-producers">
@@ -43,7 +43,7 @@ outer : if (typeClient != null) {
 			</div>
 		</div>
 
-		<div class="col-md-6 p-2">
+		<div class="col-md-5 p-2">
 			<h4>Eventos</h4>
 
 			<div id="list-events">
@@ -53,7 +53,7 @@ outer : if (typeClient != null) {
 			</div>
 		</div>
 
-		<div class="col-md-3 p-2">
+		<div class="col-md-5 p-2">
 			<h4>Consumidores</h4>
 
 			<div id="list-consumers">
@@ -107,7 +107,7 @@ outer : if (typeClient != null) {
 	</div>
 </div>
 
-<div>abcdefg</div>
+<div>abcdefgefg</div>
 
 <script>
 	async function fetchAllData() {
@@ -124,8 +124,23 @@ outer : if (typeClient != null) {
 		let producers = json.producers;
 		let contents = "";
 		
+		let optionsDate = {
+				hour12: false,
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric'
+		};
+		
 		for (let name in producers) {
-			contents += '<div class="card"><div class="card-body">' + name + '</div></div>';
+			let lastProducedMillis = producers[name].lastProduced;
+			let lastProducedObject = lastProducedMillis ? new Date(lastProducedMillis) : undefined;
+			let lastProducedText = lastProducedObject ? lastProducedObject.toLocaleDateString('es-MX', optionsDate) : 'No ha producido';
+			
+			let bgColor = '';
+			
+			if (Date.now() - lastProducedMillis < 5000){ bgColor = 'bg-success-subtle'; }
+			
+			contents += '<div class="card mb-3"><div class="card-body ' + bgColor +'"><h6>' + name + ' <code>' + producers[name].eventCount + '</code></h6><small class="text-secondary">' + lastProducedText + '</small></div></div>';
 		}
 		
 		let divProducers = document.getElementById("list-producers");
@@ -137,8 +152,18 @@ outer : if (typeClient != null) {
 		let events = json.events;
 		contents = "";
 		
-		for (let pos in events) {
-			contents += '<div class="card"><div class="card-body">' + events[pos] + '</div></div>';
+		if (events.length > 10) {
+			contents = '<pre><code class="language-json">...</code></pre>' + contents;
+		}
+		
+		let initPos = 0;
+		
+		if (events.length > 10){
+			initPos = events.length - 9;
+		}
+		
+		for (let pos = initPos; pos < events.length; pos++) {
+			contents = '<pre><code class="language-json">' + events[pos] + '</code></pre>'  + contents;
 		}
 		
 		let divEvents = document.getElementById("list-events");
@@ -151,12 +176,38 @@ outer : if (typeClient != null) {
 		contents = "";
 		
 		for (let name in consumers) {
-			contents += '<div class="card"><div class="card-body">' + name + '</div></div>';
+			let consumerEvents = consumers[name].events;
+			let lastConsumedMillis = consumers[name].lastConsumed;
+			let bgColor = '';
+			
+			if (Date.now() - lastConsumedMillis < 5000){ bgColor = 'bg-info-subtle'; }
+			
+			contents += '<div class="card mb-3"><h6 class="card-header">' + name + ' <code>' + consumerEvents.length + '</code></h6><div class="card-body ' + bgColor + '">';
+			
+			let internalContents = '';
+			
+			if (consumerEvents.length > 3) {
+				internalContents += '<pre><code class="language-json">...</code></pre>';
+			}
+			
+			let initPos = 0;
+			
+			if (consumerEvents.length > 3){
+				initPos = consumers[name].events.length - 2;
+			}
+			
+			for (let pos = initPos; pos < consumerEvents.length; pos++) {
+				internalContents = '<pre><code class="language-json">' + consumerEvents[pos] + '</code></pre>' + internalContents;
+			}
+			
+			contents += internalContents + '</div></div>';
 		}
 		
 		let divConsumers = document.getElementById("list-consumers");
 		divConsumers.innerHTML = contents;
 
+		hljs.highlightAll();
+		
 		setTimeout(fetchAllData, 2500);
 	}
 

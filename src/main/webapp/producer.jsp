@@ -28,7 +28,7 @@ if (shouldShow) {
 	<div class="input-group mb-3">
 		<span class="input-group-text" id="temperature">Temperatura
 			(celsius)</span> <input type="number" min="-273" class="form-control"
-			aria-label="Username" name="temperature" required
+			aria-label="Username" name="temperature" required id="input-temperatura"
 			aria-describedby="temperature">
 	</div>
 
@@ -40,6 +40,10 @@ if (shouldShow) {
 <form action="main" method="get">
 	<button type="submit" class="btn btn-danger">Retirar productor</button>
 </form>
+
+<script>
+document.getElementById("input-temperatura").focus();
+</script>
 
 
 <%@ include file="/footer.jsp"%>

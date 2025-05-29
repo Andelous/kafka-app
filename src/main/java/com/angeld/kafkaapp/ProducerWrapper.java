@@ -1,13 +1,12 @@
 package com.angeld.kafkaapp;
 
-import java.time.Instant;
-
 import org.apache.kafka.clients.producer.KafkaProducer;
 
 public class ProducerWrapper {
 	private KafkaProducer<String, String> producer;
 	private String name;
-	private Instant lastProduced;
+	private Long lastProduced;
+	private int eventCount = 0;
 
 	public ProducerWrapper(String name) {
 		KafkaProducer<String, String> producer = new KafkaProducer<>(KafkaObjects.PRODUCER_PROPERTIES);
@@ -32,11 +31,19 @@ public class ProducerWrapper {
 		this.name = name;
 	}
 
-	public Instant getLastProduced() {
+	public Long getLastProduced() {
 		return lastProduced;
 	}
 
-	public void setLastProduced(Instant lastProduced) {
+	public void setLastProduced(Long lastProduced) {
 		this.lastProduced = lastProduced;
+	}
+
+	public int getEventCount() {
+		return eventCount;
+	}
+
+	public void setEventCount(int eventCount) {
+		this.eventCount = eventCount;
 	}
 }

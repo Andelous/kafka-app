@@ -24,12 +24,14 @@ Consumidor
 		var contents = "";
 		
 		for (val in json) {
-			contents += "<p>" + json[val] + "</val>";
+			contents += "<pre><code class='language-json'>" + json[val] + "</code></pre>";
 		}
 
 		var myDiv = document.getElementById("kafka-events");
 		
 		myDiv.innerHTML = contents;
+		
+		hljs.highlightAll();
 
 		setTimeout(retrieveEvents, 2000);
 	}

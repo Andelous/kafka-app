@@ -19,7 +19,7 @@ outer : if (typeClient != null) {
 <%@ include file="/header.jsp"%>
 
 
-<div class="mt-3 d-flex justify-content-center align-items-center">
+<div class="mt-3 d-flex justify-content-start align-items-center">
 	<img alt="Logo de Kafka" src="favicon.ico" class="img-thumbnail me-3"
 		style="width: 50px; height: 50px;">
 
@@ -31,9 +31,9 @@ outer : if (typeClient != null) {
 
 <hr>
 
-<div class="container-fluid">
+<div class="container">
 	<div class="row">
-		<div class="col-md-2 p-2">
+		<div class="col-md-3 p-2">
 			<h4>Productores</h4>
 
 			<div id="list-producers">
@@ -41,15 +41,17 @@ outer : if (typeClient != null) {
 					<div class="card-body">Sin productores</div>
 				</div>
 			</div>
+			<div>
+				<button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal"
+					data-bs-target="#modalProducer">Agregarme +</button>
+			</div>
 		</div>
 
-		<div class="col-md-5 p-2">
+		<div class="col-md-4 p-2">
 			<h4>Eventos</h4>
 
 			<div id="list-events">
-				<div class="card">
-					<div class="card-body">Sin eventos</div>
-				</div>
+				<div class="card"><div class="card-body">Sin eventos</div></div>
 			</div>
 		</div>
 
@@ -57,57 +59,82 @@ outer : if (typeClient != null) {
 			<h4>Consumidores</h4>
 
 			<div id="list-consumers">
-				<div class="card">
-					<div class="card-body">Sin consumidores</div>
-				</div>
+				<div class="card"><div class="card-body">Sin consumidores</div></div>
+			</div>
+			<div>
+				<button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal"
+					data-bs-target="#modalConsumer">Agregarme +</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-<hr>
-
-<div class="card">
-	<div class="card-body">
-		<h6 class="mb-2">
-			Agr&eacute;gate
-			<code>:)</code>
-		</h6>
-
-		<form action="main" method="get">
-			<div class="input-group input-group-sm mb-3">
-				<span class="input-group-text">Nombre</span> <input type="text"
-					class="form-control" name="name" required minlength=3 maxlength=10>
+<div class="modal fade" id="modalProducer" tabindex="-1"
+	aria-labelledby="modalProducerLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title fs-5" id="modalProducerLabel">
+					Agr&eacute;gate
+					<code>:)</code>
+				</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"
+					aria-label="Close"></button>
 			</div>
-			<input type="hidden" name="type" value="PRODUCER"></input>
-			<button type="submit" class="btn btn-sm btn-primary">&iexcl;Quiero
-				ser productor&excl;</button>
-		</form>
+			<div class="modal-body">
+				<form action="main" method="get">
+					<div class="input-group input-group-sm mb-3">
+						<span class="input-group-text">Nombre</span> <input type="text"
+							class="form-control" name="name" required minlength=3
+							maxlength=10>
+					</div>
+					<input type="hidden" name="type" value="PRODUCER"></input>
+					<div class="d-flex justify-content-end">
+					<button type="submit" class="btn btn-sm btn-primary m-1">&iexcl;Quiero
+						ser productor&excl;</button>
+					<button type="button" class="btn btn-secondary btn-sm m-1"
+						data-bs-dismiss="modal">Cerrar</button>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
 
-<div class="card">
-	<div class="card-body">
-		<h6>
-			Agr&eacute;gate
-			<code>:)</code>
-		</h6>
 
-
-		<form action="main" method="get">
-			<div class="mb-3">
-				<label for="name-consumer" class="form-label">Nombre</label> <input
-					type="text" id="name-consumer" name="name" required minlength=3
-					maxlength=10 class="form-control form-control-sm"></input>
+<div class="modal fade" id="modalConsumer" tabindex="-1"
+	aria-labelledby="modalConsumerLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title fs-5" id="modalConsumerLabel">
+					Agr&eacute;gate
+					<code>:)</code>
+				</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"
+					aria-label="Close"></button>
 			</div>
-			<input type="hidden" name="type" value="CONSUMER"></input>
-			<button type="submit" class="btn btn-primary">&iexcl;Quiero
-				ser consumidor&excl;</button>
-		</form>
+			<div class="modal-body">
+				<form action="main" method="get">
+					<div class="input-group input-group-sm mb-3">
+						<span class="input-group-text">Nombre</span> <input type="text"
+							class="form-control" name="name" required minlength=3
+							maxlength=10>
+					</div>
+					<input type="hidden" name="type" value="CONSUMER"></input>
+					<div class="d-flex justify-content-end">
+					<button type="submit" class="btn btn-sm btn-primary m-1">&iexcl;Quiero
+						ser consumidor&excl;</button>
+					<button type="button" class="btn btn-secondary btn-sm m-1"
+						data-bs-dismiss="modal">Cerrar</button>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
 
-<div>abcdefgefg</div>
+
 
 <script>
 	async function fetchAllData() {
@@ -134,17 +161,21 @@ outer : if (typeClient != null) {
 		for (let name in producers) {
 			let lastProducedMillis = producers[name].lastProduced;
 			let lastProducedObject = lastProducedMillis ? new Date(lastProducedMillis) : undefined;
-			let lastProducedText = lastProducedObject ? lastProducedObject.toLocaleDateString('es-MX', optionsDate) : 'No ha producido';
+			let lastProducedText = lastProducedObject ? lastProducedObject.toLocaleDateString('es-MX', optionsDate) : 'No ha producido eventos';
 			
 			let bgColor = '';
 			
 			if (Date.now() - lastProducedMillis < 5000){ bgColor = 'bg-success-subtle'; }
 			
-			contents += '<div class="card mb-3"><div class="card-body ' + bgColor +'"><h6>' + name + ' <code>' + producers[name].eventCount + '</code></h6><small class="text-secondary">' + lastProducedText + '</small></div></div>';
+			contents += '<div class="card mb-3"><h6 class="card-header">' + name + ' <span class="badge rounded-pill text-bg-success">' + producers[name].eventCount + ' eventos producidos</span></h6><div class="card-body ' + bgColor +'"><small class="text-secondary">' + lastProducedText + '</small></div></div>';
 		}
 		
 		let divProducers = document.getElementById("list-producers");
-		divProducers.innerHTML = contents;
+		
+		if (contents.length > 0)
+			divProducers.innerHTML = contents;
+		else
+			divProducers.innerHTML = '<div class="card mb-3"><div class="card-body">Sin productores</div></div>';
 		
 		
 		// Events 
@@ -167,7 +198,11 @@ outer : if (typeClient != null) {
 		}
 		
 		let divEvents = document.getElementById("list-events");
-		divEvents.innerHTML = contents;
+		
+		if (events.length > 0)
+			divEvents.innerHTML = contents;
+		else
+			divEvents.innerHTML = '<div class="card mb-3"><div class="card-body">Sin eventos</div></div>';
 
 
 		// Consumers 
@@ -182,7 +217,7 @@ outer : if (typeClient != null) {
 			
 			if (Date.now() - lastConsumedMillis < 5000){ bgColor = 'bg-info-subtle'; }
 			
-			contents += '<div class="card mb-3"><h6 class="card-header">' + name + ' <code>' + consumerEvents.length + '</code></h6><div class="card-body ' + bgColor + '">';
+			contents += '<div class="card mb-3"><h6 class="card-header">' + name + '  <span class="badge rounded-pill text-bg-info"><small>' + consumerEvents.length + ' eventos consumidos</small></span></h6><div class="card-body ' + bgColor + '">';
 			
 			let internalContents = '';
 			
@@ -200,11 +235,19 @@ outer : if (typeClient != null) {
 				internalContents = '<pre><code class="language-json">' + consumerEvents[pos] + '</code></pre>' + internalContents;
 			}
 			
+			if (consumerEvents.length == 0) {
+				internalContents = '<small class="text-secondary">No ha consumido eventos</small>';
+			}
+			
 			contents += internalContents + '</div></div>';
 		}
 		
 		let divConsumers = document.getElementById("list-consumers");
-		divConsumers.innerHTML = contents;
+		
+		if (contents.length > 0)
+			divConsumers.innerHTML = contents;
+		else
+			divConsumers.innerHTML = '<div class="card mb-3"><div class="card-body">Sin consumidores</div></div>';
 
 		hljs.highlightAll();
 		

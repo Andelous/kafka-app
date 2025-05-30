@@ -17,4 +17,4 @@
 	<script
 		src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
 
-	<div class="container-fluid">
+	<div class="container">

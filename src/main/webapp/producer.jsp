@@ -16,33 +16,45 @@ if (shouldShow) {
 		aria-label="Close"></button>
 </div>
 
-<% } %>
+<%
+}
+%>
 
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-sm-9 col-md-8 col-lg-6 col-xl-4 ">
 
-<h4 class="mt-3">
-	Productor <strong><%=((ProducerWrapper) session.getAttribute(KafkaObjects.PRODUCER)).getName()%></strong>
-</h4>
+			<h4 class="mt-3">
+				Productor <strong><%=((ProducerWrapper) session.getAttribute(KafkaObjects.PRODUCER)).getName()%></strong>
+			</h4>
 
+			<hr>
 
-<form action="kafka/produce" method="get" class="mb-3">
-	<div class="input-group mb-3">
-		<span class="input-group-text" id="temperature">Temperatura
-			(celsius)</span> <input type="number" min="-273" class="form-control"
-			aria-label="Username" name="temperature" required id="input-temperatura"
-			aria-describedby="temperature">
+			<form action="kafka/produce" method="get" class="mb-3">
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="temperature">Temperatura
+						(celsius)</span> <input type="number" min="-273" class="form-control"
+						aria-label="Username" name="temperature" required
+						id="input-temperatura" aria-describedby="temperature">
+				</div>
+
+				<button type="submit" class="btn btn-success">&iexcl;Producir
+					evento&excl;</button>
+			</form>
+
+			<form action="main" method="get">
+				<button type="submit" class="btn btn-danger">Retirar
+					productor</button>
+			</form>
+
+		</div>
 	</div>
-
-	<button type="submit" class="btn btn-success">&iexcl;Producir
-		evento&excl;</button>
-</form>
+</div>
 
 
-<form action="main" method="get">
-	<button type="submit" class="btn btn-danger">Retirar productor</button>
-</form>
 
 <script>
-document.getElementById("input-temperatura").focus();
+	document.getElementById("input-temperatura").focus();
 </script>
 
 

@@ -1,15 +1,31 @@
+<%@ page import="com.angeld.kafkaapp.KafkaObjects"%>
+<%@ page import="com.angeld.kafkaapp.ConsumerWrapper"%>
+
+
+
 <%@ include file="/header.jsp"%>
 
 
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-sm-10 col-md-9 col-lg-8 col-xl-7">
 
-Consumidor
+			<h4 class="mt-3">
+				Consumidor <strong><%=((ConsumerWrapper) session.getAttribute(KafkaObjects.CONSUMER)).getName()%></strong>
+			</h4>
 
-<div id="kafka-events"></div>
+			<hr>
+			
+			<div id="kafka-events"></div>
 
-<form action="main" method="get">
-	<button type="submit" class="btn btn-danger">Retirar
-		consumidor</button>
-</form>
+			<form action="main" method="get">
+				<button type="submit" class="btn btn-danger">Retirar
+					consumidor</button>
+			</form>
+
+		</div>
+	</div>
+</div>
 
 
 <script>
